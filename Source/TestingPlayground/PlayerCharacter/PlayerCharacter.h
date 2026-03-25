@@ -1,10 +1,11 @@
 ﻿#pragma once
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
-class APlayerCharacter : public ACharacter
+class APlayerCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
@@ -13,8 +14,12 @@ public:
 	
 	FVector GetInteractionStart() const;
 	FVector GetInteractionDirection() const;
+	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
+	void BeginPlay() override;
+
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
 	virtual void NotifyControllerChanged() override;

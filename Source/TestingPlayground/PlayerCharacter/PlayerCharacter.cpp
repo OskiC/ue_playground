@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TestingPlayground/PlayerState/CustomPlayerState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -82,4 +83,9 @@ FVector APlayerCharacter::GetInteractionStart() const {
 
 FVector APlayerCharacter::GetInteractionDirection() const {
 	return CameraComponent ? CameraComponent->GetForwardVector() : FVector::ForwardVector;
+}
+
+UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
+{
+	return Cast<ACustomPlayerState>(GetPlayerState())->GetAbilitySystemComponent();
 }
