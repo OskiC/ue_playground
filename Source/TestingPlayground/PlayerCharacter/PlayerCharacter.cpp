@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -88,4 +89,17 @@ FVector APlayerCharacter::GetInteractionDirection() const {
 UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
 {
 	return Cast<ACustomPlayerState>(GetPlayerState())->GetAbilitySystemComponent();
+}
+
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	ACustomPlayerState* PS = GetPlayerState<ACustomPlayerState>();
+	if (IsValid(PS))
+	{
+		AbilitySystemComponent = Cast<UCustomAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		
+		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+	}
 }

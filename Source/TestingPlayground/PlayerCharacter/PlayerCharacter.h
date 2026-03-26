@@ -18,7 +18,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
-	void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
@@ -45,4 +45,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> LookAction = nullptr;
+	
+	// I'm not sure if that's a correct way but for now lets leave it
+	UPROPERTY()
+	TObjectPtr<class UCustomAbilitySystemComponent> AbilitySystemComponent = nullptr;
 };
