@@ -49,6 +49,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		
+		EnhancedInputComponent->BindAction(DebugGameplayEffectAction, ETriggerEvent::Started, this, &APlayerCharacter::CallDebugGameplayEffect);
 	}
 	else
 	{
@@ -101,5 +103,27 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 		AbilitySystemComponent = Cast<UCustomAbilitySystemComponent>(PS->GetAbilitySystemComponent());
 		
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+	}
+}
+
+void APlayerCharacter::CallDebugGameplayEffect()
+{
+	if (!IsValid(DebugGameplayEffect))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Gameplay effect is not set up"));
+		return;
+	}
+	
+	if (IsValid(AbilitySystemComponent))
+	{
+		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+		ContextHandle.AddInstigator(this, this);
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DebugGameplayEffect, DebugGameplayEffectLevel, ContextHandle);
+		
+		if (SpecHandle.IsValid())
+		{
+			UE_LOG(LogTemp, Display, TEXT("DebugGameplayEffect correctly triggered"));
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
 	}
 }

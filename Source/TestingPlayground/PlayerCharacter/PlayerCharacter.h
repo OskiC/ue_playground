@@ -46,7 +46,19 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> LookAction = nullptr;
 	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UInputAction> DebugGameplayEffectAction = nullptr;
+	
 	// I'm not sure if that's a correct way but for now lets leave it
 	UPROPERTY()
 	TObjectPtr<class UCustomAbilitySystemComponent> AbilitySystemComponent = nullptr;
+	
+	UPROPERTY(EditAnywhere, Category = "Debug Game Effect")
+	TSubclassOf<class UGameplayEffect> DebugGameplayEffect;
+	
+	UPROPERTY(EditAnywhere, Category = "Debug Game Effect")
+	float DebugGameplayEffectLevel = 1.f;
+	
+private:
+	void CallDebugGameplayEffect();
 };
