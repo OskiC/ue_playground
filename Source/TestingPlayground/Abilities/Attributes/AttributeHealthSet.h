@@ -10,6 +10,8 @@ class UAttributeHealthSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+	UAttributeHealthSet();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData Health;
 	

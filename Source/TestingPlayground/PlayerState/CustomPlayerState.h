@@ -18,5 +18,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UCustomAbilitySystemComponent> AbilitySystemComponent = nullptr;
 	
+	UPROPERTY()
+	TObjectPtr<class UAttributeHealthSet> HealthSet = nullptr;
+	
 	virtual void BeginPlay() override;
 };

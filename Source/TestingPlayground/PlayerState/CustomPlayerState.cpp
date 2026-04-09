@@ -2,13 +2,15 @@
 
 #include "AbilitySystemComponent.h"
 #include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
+#include "TestingPlayground/Abilities/Attributes/AttributeHealthSet.h"
 
 ACustomPlayerState::ACustomPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UCustomAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
-	
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Full);
+	
+	HealthSet = CreateDefaultSubobject<UAttributeHealthSet>(TEXT("HealthSet"));
 }
 
 UAbilitySystemComponent* ACustomPlayerState::GetAbilitySystemComponent() const
