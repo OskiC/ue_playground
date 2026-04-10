@@ -12,6 +12,8 @@ class UAttributeHealthSet : public UAttributeSet
 public:
 	UAttributeHealthSet();
 	
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData Health;
 	
