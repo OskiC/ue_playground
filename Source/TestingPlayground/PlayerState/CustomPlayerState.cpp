@@ -27,3 +27,8 @@ void ACustomPlayerState::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("PlayerState i AbilitySystemComp gotowe?"));
 	}
 }
+
+UAttributeHealthSet* ACustomPlayerState::GetAttributeHealthSet()
+{
+	return HealthSet;
+}

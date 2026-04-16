@@ -14,6 +14,8 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
+	class UAttributeHealthSet* GetAttributeHealthSet();
+	
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UCustomAbilitySystemComponent> AbilitySystemComponent = nullptr;
