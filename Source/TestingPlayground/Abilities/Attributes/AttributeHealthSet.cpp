@@ -1,5 +1,7 @@
 ﻿#include "AttributeHealthSet.h"
 
+#include "GameplayEffectExtension.h"
+
 UAttributeHealthSet::UAttributeHealthSet()
 {
 	InitHealth(100.f);
@@ -16,6 +18,7 @@ void UAttributeHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
 	}
+
 	Super::PreAttributeChange(Attribute, NewValue);
 }
 
@@ -32,5 +35,16 @@ void UAttributeHealthSet::PostAttributeBaseChange(const FGameplayAttribute& Attr
 	{
 		const float CurrentHealth = GetHealth();
 		OnHealthChanged.Broadcast(CurrentHealth, CurrentHealth, NewValue);
+	}
+}
+
+void UAttributeHealthSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		const float Clamped = FMath::Clamp(GetHealth(), 0.f, GetMaxHealth());
+		SetHealth(Clamped);
 	}
 }
