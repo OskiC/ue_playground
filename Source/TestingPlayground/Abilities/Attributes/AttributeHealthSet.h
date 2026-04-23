@@ -18,15 +18,17 @@ public:
 	virtual void PostAttributeBaseChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) const override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (HideFromModifiers))
 	FGameplayAttributeData Health;
-	
 	ATTRIBUTE_ACCESSORS_BASIC(UAttributeHealthSet, Health)
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData MaxHealth;
-	
 	ATTRIBUTE_ACCESSORS_BASIC(UAttributeHealthSet, MaxHealth)
+	
+	UPROPERTY(VisibleAnywhere)
+	FGameplayAttributeData Damage;
+	ATTRIBUTE_ACCESSORS_BASIC(UAttributeHealthSet, Damage)
 	
 	UPROPERTY(BlueprintAssignable)
 	FAttributeHealthChanged OnHealthChanged;

@@ -42,9 +42,18 @@ void UAttributeHealthSet::PostGameplayEffectExecute(const struct FGameplayEffect
 {
 	Super::PostGameplayEffectExecute(Data);
 	
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		const float Clamped = FMath::Clamp(GetHealth(), 0.f, GetMaxHealth());
-		SetHealth(Clamped);
+		const float DamageValue = GetDamage();
+		const float OldHealthValue = GetHealth();
+		const float MaxHealthValue = GetMaxHealth();
+		const float NewHealthValue = FMath::Clamp(OldHealthValue - DamageValue, 0.f, MaxHealthValue);
+		
+		if (OldHealthValue != NewHealthValue)
+		{
+			SetHealth(NewHealthValue);
+		}
+		
+		SetDamage(0.f);
 	}
 }
