@@ -1,11 +1,16 @@
 ﻿#pragma once
 
-#include "InteractionComponentBase.h"
+#include "InteractionComponentBase.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class UInteractionComponentBase : public UActorComponent
 {
 	GENERATED_BODY()
+
 public:
+	virtual void OnInteractionBegin();
+	virtual void OnInteractionEnd();
 	
+	UPROPERTY(EditAnywhere, Category = "InteractionComponent", meta = (AllowedClasses = "StaticMesh,SkeletalMesh"))
+	TObjectPtr<UObject> InteractionMesh;
 };
