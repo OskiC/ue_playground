@@ -5,25 +5,30 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.f);
-	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
-	MovementComponent = CreateDefaultSubobject<UCharacterMovementComponent>(TEXT("MovementComponent"));
+    
+	USkeletalMeshComponent* PlayerMesh = GetMesh();
+	PlayerMesh->SetupAttachment(GetCapsuleComponent());
+	PlayerMesh->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -96.f), FRotator(0.f, -90.f, 0.f));
+    
+	USpringArmComponent* SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(GetCapsuleComponent());
+	SpringArm->TargetArmLength = 250.0f;
+	SpringArm->bUsePawnControlRotation = true; 
 	
+	SpringArm->SetRelativeLocation(FVector(0.f, 0.f, 50.f)); 
+
+	SpringArm->SocketOffset = FVector(0.f, 50.f, 50.f);
+    
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	CameraComponent->SetupAttachment(GetCapsuleComponent());
-	CameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
-	CameraComponent->bUsePawnControlRotation = true;
-	
-	SkeletalMeshComponent->SetOnlyOwnerSee(true);
-	SkeletalMeshComponent->SetupAttachment(CameraComponent);
-	SkeletalMeshComponent->bCastDynamicShadow = true;
-	SkeletalMeshComponent->CastShadow = true;
-	SkeletalMeshComponent->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+	CameraComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	CameraComponent->bUsePawnControlRotation = false;
 }
 
 void APlayerCharacter::NotifyControllerChanged()
