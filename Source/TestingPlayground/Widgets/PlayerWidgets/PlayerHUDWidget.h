@@ -9,11 +9,19 @@ class UPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void ShowTooltip(const FText& ToolTipText);
+	virtual void NativeConstruct() override;
 	
+	void ShowTooltip(const FText& ToolTipText);
 	void HideTooltip();
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class FTextBlock> TooltipText;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar;
+	
+private:
+	UFUNCTION()
+	void OnHealthUpdated(float OldValue, float NewValue, float MaxHealth);
 };
