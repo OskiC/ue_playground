@@ -11,12 +11,12 @@ class UPlayerHUDWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
-	void ShowTooltip(const FText& ToolTipText);
+	void ShowTooltip(const FText& TooltipText);
 	void HideTooltip();
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class FTextBlock> TooltipText;
+	TObjectPtr<class UTextBlock> InteractableTooltipText;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
