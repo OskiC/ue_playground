@@ -13,4 +13,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "InteractionComponent", meta = (AllowedClasses = "StaticMesh,SkeletalMesh"))
 	TObjectPtr<UObject> InteractionMesh;
+	
+	UPROPERTY(EditAnywhere, Category = "InteractionComponent")
+	FText TooltipText;
 };
