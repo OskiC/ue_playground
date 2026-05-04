@@ -11,9 +11,6 @@ class UPlayerHUDWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
-	void ShowTooltip(const FText& TooltipText);
-	void HideTooltip();
-	
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> InteractableTooltipText;
@@ -27,4 +24,7 @@ protected:
 private:
 	UFUNCTION()
 	void OnHealthUpdated(float OldValue, float NewValue, float MaxHealth);
+	
+	UFUNCTION()
+	void OnTooltipUpdated(FText IncomingTooltipText);
 };

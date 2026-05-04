@@ -2,6 +2,7 @@
 
 #include "TestingPlayground/Abilities/Attributes/AttributeHealthSet.h"
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
+#include "TestingPlayground/PlayerCharacter/CustomPlayerController.h"
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -18,6 +19,14 @@ void UPlayerHUDWidget::NativeConstruct()
 		
 			OnHealthUpdated(AttributeHealthSet->GetHealth(), AttributeHealthSet->GetHealth(), AttributeHealthSet->GetMaxHealth());
 		}
+		
+		ACustomPlayerController* CustomPlayerController = Cast<ACustomPlayerController>(PS->GetPlayerController());
+		if (IsValid(CustomPlayerController))
+		{
+			CustomPlayerController->OnObjectHovered.AddDynamic(this, &UPlayerHUDWidget::OnTooltipUpdated);
+			
+			OnTooltipUpdated(FText::GetEmpty());
+		}
 	}
 }
 
@@ -32,12 +41,7 @@ void UPlayerHUDWidget::OnHealthUpdated(float OldValue, float NewValue, float Max
 	HealthBar->SetPercent(NewValue / MaxHealth);
 }
 
-void UPlayerHUDWidget::ShowTooltip(const FText& TooltipText)
+void UPlayerHUDWidget::OnTooltipUpdated(FText IncomingTooltipText)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tooltip: %s"), *TooltipText.ToString());
-}
-
-void UPlayerHUDWidget::HideTooltip()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Tooltip hidden"));	
+	InteractableTooltipText->SetText(IncomingTooltipText);	
 }
