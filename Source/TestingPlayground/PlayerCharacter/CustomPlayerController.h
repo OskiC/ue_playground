@@ -2,6 +2,8 @@
 
 #include "CustomPlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractedObjectHovered, FText, TooltipText);
+
 UCLASS()
 class ACustomPlayerController : public APlayerController
 {
@@ -10,4 +12,18 @@ class ACustomPlayerController : public APlayerController
 public:
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnInteractedObjectHovered OnObjectHovered;
+	
+protected:
+	UPROPERTY(EditAnywhere)
+	float InteractLineTraceLength = 300.f;
+	
+private:
+	void SendTrace();
+	
+	UPROPERTY()
+	TObjectPtr<class UInteractionComponentBase> LastHoveredComponent = nullptr;
 };
