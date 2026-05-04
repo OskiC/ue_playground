@@ -11,7 +11,6 @@ void ACustomHUD::BeginPlay()
 		if (IsValid(PlayerHUDWidget))
 		{
 			PlayerHUDWidget->AddToViewport();
-			PlayerHUDWidget->HideTooltip();
 		}
 	}
 }
