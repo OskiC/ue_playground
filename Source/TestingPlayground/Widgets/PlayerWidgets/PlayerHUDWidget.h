@@ -19,6 +19,9 @@ protected:
 	TObjectPtr<class UTextBlock> InteractableTooltipText;
 	
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> HealthLiteral;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
 	
 private:

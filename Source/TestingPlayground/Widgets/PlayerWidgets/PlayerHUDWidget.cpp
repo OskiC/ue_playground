@@ -28,6 +28,7 @@ void UPlayerHUDWidget::OnHealthUpdated(float OldValue, float NewValue, float Max
 		MaxHealth
 	);
 	
+	HealthLiteral->SetText(FText::FromString(HealthText));
 	HealthBar->SetPercent(NewValue / MaxHealth);
 }
 
