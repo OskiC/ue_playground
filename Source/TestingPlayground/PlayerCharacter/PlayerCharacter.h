@@ -14,6 +14,7 @@ public:
 	
 	FVector GetInteractionStart() const;
 	FVector GetInteractionDirection() const;
+	void OnInteractPressed(const struct FInputActionValue& Value);
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -48,6 +49,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> DebugGameplayEffectAction = nullptr;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UInputAction> InteractAction = nullptr;
 	
 	// I'm not sure if that's a correct way but for now lets leave it
 	UPROPERTY()

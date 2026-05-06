@@ -1,13 +1,14 @@
 ﻿#include "PlayerCharacter.h"
 
+#include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
+#include "TestingPlayground/PlayerState/CustomPlayerState.h"
+#include "CustomPlayerController.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
-#include "TestingPlayground/PlayerState/CustomPlayerState.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -56,10 +57,20 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		
 		EnhancedInputComponent->BindAction(DebugGameplayEffectAction, ETriggerEvent::Started, this, &APlayerCharacter::CallDebugGameplayEffect);
+		
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::OnInteractPressed);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void APlayerCharacter::OnInteractPressed(const FInputActionValue& Value)
+{
+	if (ACustomPlayerController* PC = Cast<ACustomPlayerController>(GetController()))
+	{
+		PC->Interact(); 
 	}
 }
 
