@@ -1,7 +1,7 @@
 ﻿#include "CustomPlayerController.h"
 
 #include "PlayerCharacter.h"
-#include "TestingPlayground/Components/InteractionComponents/InteractionComponentBase.h"
+#include "TestingPlayground/Interfaces/InteractableInterface.h"
 
 void ACustomPlayerController::SetupInputComponent()
 {
@@ -32,34 +32,62 @@ void ACustomPlayerController::SendTrace()
 		return;
 	}
 	
-	FVector Start = CustomCharacter->GetInteractionStart();
-	FVector Direction = CustomCharacter->GetInteractionDirection();
-	FVector End = Start + Direction * InteractLineTraceLength;
+	FVector Start = CustomCharacter->GetActorLocation() + FVector(0.f, 0.f, 60.f); 
+	FVector Direction = CustomCharacter->GetControlRotation().Vector();
+	FVector End = Start + (Direction * InteractLineTraceLength);
 	
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(CustomCharacter);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
+    
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, 0.f, 0, 2.f);
 	
-	// DrawDebugLine(GetWorld(), Start, End, FColor::Red, 0.f, 0, 2.f);
-	
-	UInteractionComponentBase* CurrentInteractComp = nullptr;
+	UObject* NewTargetObject = nullptr;
+
 	if (AActor* HitActor = HitResult.GetActor())
 	{
-		CurrentInteractComp = HitActor->FindComponentByClass<UInteractionComponentBase>();
+		if (HitResult.GetComponent() && HitResult.GetComponent()->Implements<UInteractableInterface>())
+		{
+			NewTargetObject = HitResult.GetComponent();
+		}
+		else if (HitActor->Implements<UInteractableInterface>())
+		{
+			NewTargetObject = HitActor;
+		}
+		else
+		{
+			NewTargetObject = HitActor->FindComponentByInterface(UInteractableInterface::StaticClass());
+		}
 	}
-	
-	if (LastHoveredComponent == CurrentInteractComp)
-	{
-		return;
-	}
-	
-	LastHoveredComponent = CurrentInteractComp;
 
-	if (IsValid(LastHoveredComponent) && !LastHoveredComponent->TooltipText.IsEmpty())
+	if (CurrentHoveredTarget.GetObject() != NewTargetObject)
 	{
-		OnObjectHovered.Broadcast(LastHoveredComponent->TooltipText);
+		if (CurrentHoveredTarget) 
+		{
+			CurrentHoveredTarget->OnHoverEnd();
+		}
+        
+		CurrentHoveredTarget = NewTargetObject;
+
+		if (CurrentHoveredTarget)
+		{
+			CurrentHoveredTarget->OnHoverBegin();
+			OnObjectHovered.Broadcast(CurrentHoveredTarget->GetInteractionTooltip());
+		}
+		else
+		{
+			OnObjectHovered.Broadcast(FText::GetEmpty());
+		}
 	}
-	else
+}
+
+void ACustomPlayerController::Interact()
+{
+	if (CurrentHoveredTarget)
 	{
-		OnObjectHovered.Broadcast(FText::GetEmpty());
+		UE_LOG(LogTemp, Warning, TEXT("Interaction started from controller"));
+		CurrentHoveredTarget->OnInteract(GetPawn());
 	}
 }

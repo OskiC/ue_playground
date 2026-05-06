@@ -14,6 +14,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	
+	void Interact();
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnInteractedObjectHovered OnObjectHovered;
 	
@@ -25,5 +27,5 @@ private:
 	void SendTrace();
 	
 	UPROPERTY()
-	TObjectPtr<class UInteractionComponentBase> LastHoveredComponent = nullptr;
+	TScriptInterface<class IInteractableInterface> CurrentHoveredTarget = nullptr;
 };
