@@ -3,6 +3,7 @@
 #include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
 #include "CustomPlayerController.h"
+#include <TestingPlayground/HUD/CustomHUD.h>
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -122,7 +123,32 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
+void APlayerCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	ACustomPlayerState* PS = GetPlayerState<ACustomPlayerState>();
+	if (IsValid(PS))
+	{
+		AbilitySystemComponent = Cast<UCustomAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+
+		if (APlayerController* PC = Cast<ACustomPlayerController>(GetController()))
+		{
+			if (ACustomHUD* HUD = Cast<ACustomHUD>(PC->GetHUD()))
+			{
+				HUD->RefreshWidget();
+			}
+		}
+	}
+}
+
 void APlayerCharacter::CallDebugGameplayEffect()
+{
+	Server_CallDebugGameplayEffect();
+}
+
+void APlayerCharacter::Server_CallDebugGameplayEffect_Implementation()
 {
 	if (!IsValid(DebugGameplayEffect))
 	{
@@ -135,10 +161,10 @@ void APlayerCharacter::CallDebugGameplayEffect()
 		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
 		ContextHandle.AddInstigator(this, this);
 		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DebugGameplayEffect, DebugGameplayEffectLevel, ContextHandle);
-		
+
 		if (SpecHandle.IsValid())
 		{
-			UE_LOG(LogTemp, Display, TEXT("DebugGameplayEffect correctly triggered"));
+			UE_LOG(LogTemp, Display, TEXT("DebugGameplayEffect correctly triggered ON THE SERVER"));
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}

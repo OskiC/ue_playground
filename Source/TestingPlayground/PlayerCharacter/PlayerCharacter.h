@@ -20,6 +20,7 @@ public:
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
@@ -65,4 +66,7 @@ protected:
 	
 private:
 	void CallDebugGameplayEffect();
+
+	UFUNCTION(Server, Reliable)
+	void Server_CallDebugGameplayEffect();
 };
