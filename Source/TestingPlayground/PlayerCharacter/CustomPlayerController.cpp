@@ -26,6 +26,11 @@ void ACustomPlayerController::Tick(float DeltaSeconds)
 
 void ACustomPlayerController::SendTrace()
 {
+	if (!IsLocalController())
+	{
+		return;
+	}
+
 	APlayerCharacter* CustomCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!IsValid(CustomCharacter))
 	{
@@ -90,4 +95,14 @@ void ACustomPlayerController::Interact()
 		UE_LOG(LogTemp, Warning, TEXT("Interaction started from controller"));
 		CurrentHoveredTarget->OnInteract(GetPawn());
 	}
+}
+
+UObject* ACustomPlayerController::GetCurrentHoveredTarget() const
+{
+	if (CurrentHoveredTarget.GetInterface())
+	{
+		return CurrentHoveredTarget.GetObject();
+	}
+	
+	return nullptr;
 }
