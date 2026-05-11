@@ -1,6 +1,7 @@
 ﻿#include "AttributeHealthSet.h"
 
 #include "GameplayEffectExtension.h"
+#include <Net/UnrealNetwork.h>
 
 UAttributeHealthSet::UAttributeHealthSet()
 {
@@ -56,4 +57,33 @@ void UAttributeHealthSet::PostGameplayEffectExecute(const struct FGameplayEffect
 		
 		SetDamage(0.f);
 	}
+}
+
+void UAttributeHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UAttributeHealthSet, Health);
+	DOREPLIFETIME(UAttributeHealthSet, MaxHealth);
+}
+
+void UAttributeHealthSet::OnRep_Health(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeHealthSet, Health, OldValue);
+
+	const float OldHealth = OldValue.GetCurrentValue();
+	const float NewHealth = GetHealth();
+	const float CurrentMaxHealth = GetMaxHealth();
+
+	OnHealthChanged.Broadcast(OldHealth, NewHealth, CurrentMaxHealth);
+}
+
+void UAttributeHealthSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeHealthSet, MaxHealth, OldValue);
+
+	const float CurrentHealth = GetHealth();
+	const float OldMaxHealth = OldValue.GetCurrentValue();
+	const float NewMaxHealth = GetMaxHealth();
+
+	OnHealthChanged.Broadcast(CurrentHealth, CurrentHealth, NewMaxHealth);
 }
