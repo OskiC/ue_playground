@@ -69,9 +69,22 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::OnInteractPressed(const FInputActionValue& Value)
 {
-	if (ACustomPlayerController* PC = Cast<ACustomPlayerController>(GetController()))
+	ACustomPlayerController* PC = Cast<ACustomPlayerController>(GetController());
+	if (!IsValid(PC))
 	{
-		PC->Interact(); 
+		return;
+	}
+
+	UObject* TargetObject = PC->GetCurrentHoveredTarget();
+
+	if (IsValid(TargetObject))
+	{
+		FGameplayEventData Payload;
+		Payload.Instigator = this;
+		Payload.OptionalObject = TargetObject;
+
+		FGameplayTag InteractTag = FGameplayTag::RequestGameplayTag(FName("Event.Interaction"));
+		AbilitySystemComponent->HandleGameplayEvent(InteractTag, &Payload);
 	}
 }
 
@@ -117,9 +130,10 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	ACustomPlayerState* PS = GetPlayerState<ACustomPlayerState>();
 	if (IsValid(PS))
 	{
-		AbilitySystemComponent = Cast<UCustomAbilitySystemComponent>(PS->GetAbilitySystemComponent());
-		
+		AbilitySystemComponent = Cast<UCustomAbilitySystemComponent>(PS->GetAbilitySystemComponent());		
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+
+		AddCharacterAbilities();
 	}
 }
 
@@ -139,6 +153,30 @@ void APlayerCharacter::OnRep_PlayerState()
 			{
 				HUD->RefreshWidget();
 			}
+		}
+	}
+}
+
+void APlayerCharacter::AddCharacterAbilities()
+{
+	// only server can grant abilities
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (!IsValid(AbilitySystemComponent))
+	{
+		return;
+	}
+
+	for (const TSubclassOf<UGameplayAbility>& AbilityClass : DefaultAbilities)
+	{
+		if (IsValid(AbilityClass))
+		{
+			FGameplayAbilitySpec AbilitySpec(AbilityClass, 1, INDEX_NONE, this);
+
+			AbilitySystemComponent->GiveAbility(AbilitySpec);
 		}
 	}
 }

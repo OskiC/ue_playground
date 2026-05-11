@@ -63,8 +63,12 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Debug Game Effect")
 	float DebugGameplayEffectLevel = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
 	
 private:
+	void AddCharacterAbilities();
 	void CallDebugGameplayEffect();
 
 	UFUNCTION(Server, Reliable)
