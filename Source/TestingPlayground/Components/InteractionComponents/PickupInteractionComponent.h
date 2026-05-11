@@ -9,5 +9,7 @@ class UPickupInteractionComponent : public UInteractionComponentBase
 	GENERATED_BODY()
 	
 public:
-	
+	UPickupInteractionComponent();
+
+	virtual void OnInteract(APawn* Instigator) override;
 };
