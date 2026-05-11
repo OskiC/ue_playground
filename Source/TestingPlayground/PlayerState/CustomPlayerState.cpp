@@ -8,7 +8,8 @@ ACustomPlayerState::ACustomPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UCustomAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Full);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	NetUpdateFrequency = 100.f;
 	
 	HealthSet = CreateDefaultSubobject<UAttributeHealthSet>(TEXT("HealthSet"));
 }
