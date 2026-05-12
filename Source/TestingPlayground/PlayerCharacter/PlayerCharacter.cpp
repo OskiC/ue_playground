@@ -147,11 +147,14 @@ void APlayerCharacter::OnRep_PlayerState()
 		AbilitySystemComponent = Cast<UCustomAbilitySystemComponent>(PS->GetAbilitySystemComponent());
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
 
-		if (APlayerController* PC = Cast<ACustomPlayerController>(GetController()))
+		if (IsLocallyControlled())
 		{
-			if (ACustomHUD* HUD = Cast<ACustomHUD>(PC->GetHUD()))
+			if (APlayerController* PC = Cast<ACustomPlayerController>(GetController()))
 			{
-				HUD->RefreshWidget();
+				if (ACustomHUD* HUD = Cast<ACustomHUD>(PC->GetHUD()))
+				{
+					HUD->RefreshWidget();
+				}
 			}
 		}
 	}
