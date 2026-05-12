@@ -3,11 +3,11 @@
 #include "Blueprint/UserWidget.h"
 #include "TestingPlayground/Widgets/PlayerWidgets/PlayerHUDWidget.h"
 
-void ACustomHUD::BeginPlay()
+void ACustomHUD::RefreshWidget()
 {
-	if (PlayerHUDWidgetClass)
+	if (!IsValid(PlayerHUDWidget) && PlayerHUDWidgetClass)
 	{
-		PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(GetWorld(), PlayerHUDWidgetClass);
+		PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(GetOwningPlayerController(), PlayerHUDWidgetClass);
 		if (IsValid(PlayerHUDWidget))
 		{
 			PlayerHUDWidget->AddToViewport();

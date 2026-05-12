@@ -9,10 +9,9 @@ class ACustomHUD : public AHUD
 	GENERATED_BODY()
 	
 public:
+	void RefreshWidget();
 	
 protected:
-	virtual void BeginPlay() override;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
 	
