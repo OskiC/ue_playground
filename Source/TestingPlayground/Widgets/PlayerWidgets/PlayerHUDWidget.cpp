@@ -9,23 +9,37 @@
 
 void UPlayerHUDWidget::NativeConstruct()
 {
-	ACustomPlayerState* PS = Cast<ACustomPlayerState>(GetOwningPlayerState());
-	if (IsValid(PS))
+	Super::NativeConstruct();
+
+	ACustomPlayerController* PC = Cast<ACustomPlayerController>(GetOwningPlayer());
+	if (IsValid(PC))
 	{
-		UAttributeHealthSet* AttributeHealthSet =  PS->GetAttributeHealthSet();
-		if (IsValid(AttributeHealthSet))
+		PC->OnObjectHovered.AddDynamic(this, &UPlayerHUDWidget::OnTooltipUpdated);
+		OnTooltipUpdated(FText::GetEmpty());
+
+		ACustomPlayerState* PS = PC->GetPlayerState<ACustomPlayerState>();
+
+		if (!IsValid(PS))
 		{
-			AttributeHealthSet->OnHealthChanged.AddDynamic(this, &UPlayerHUDWidget::OnHealthUpdated);
-		
-			OnHealthUpdated(AttributeHealthSet->GetHealth(), AttributeHealthSet->GetHealth(), AttributeHealthSet->GetMaxHealth());
+			APawn* OwningPawn = PC->GetPawn();
+			if (IsValid(OwningPawn))
+			{
+				PS = OwningPawn->GetPlayerState<ACustomPlayerState>();
+			}
 		}
-		
-		ACustomPlayerController* CustomPlayerController = Cast<ACustomPlayerController>(PS->GetPlayerController());
-		if (IsValid(CustomPlayerController))
+
+		if (IsValid(PS))
 		{
-			CustomPlayerController->OnObjectHovered.AddDynamic(this, &UPlayerHUDWidget::OnTooltipUpdated);
-			
-			OnTooltipUpdated(FText::GetEmpty());
+			UAttributeHealthSet* AttributeHealthSet = PS->GetAttributeHealthSet();
+			if (IsValid(AttributeHealthSet))
+			{
+				AttributeHealthSet->OnHealthChanged.AddDynamic(this, &UPlayerHUDWidget::OnHealthUpdated);
+				OnHealthUpdated(AttributeHealthSet->GetHealth(), AttributeHealthSet->GetHealth(), AttributeHealthSet->GetMaxHealth());
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("UPlayerHUDWidget: PlayerState was null during NativeConstruct!"));
 		}
 	}
 }
