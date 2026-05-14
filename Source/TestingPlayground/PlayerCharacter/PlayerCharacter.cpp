@@ -4,6 +4,7 @@
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
 #include "CustomPlayerController.h"
 #include <TestingPlayground/HUD/CustomHUD.h>
+#include <TestingPlayground/Components/InventoryComponents/InventoryComponent.h>
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -31,6 +32,9 @@ APlayerCharacter::APlayerCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	CameraComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	CameraComponent->bUsePawnControlRotation = false;
+
+	// Custom Components
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void APlayerCharacter::NotifyControllerChanged()

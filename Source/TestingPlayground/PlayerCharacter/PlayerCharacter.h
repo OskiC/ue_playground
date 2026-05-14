@@ -66,6 +66,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
+
+
+	// Custom Components
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TObjectPtr<class UInventoryComponent> InventoryComponent = nullptr;
 	
 private:
 	void AddCharacterAbilities();
