@@ -15,6 +15,8 @@ void UPickupInteractionComponent::BeginPlay()
 		ItemPayload.ItemDefinition = ItemDefined.ItemDefinition;
 		ItemPayload.StackCount = ItemDefined.Quantity;
 	}
+
+	TooltipText = FText::FromString(ItemPayload.ItemDefinition->ItemName);
 }
 
 void UPickupInteractionComponent::OnInteract(APawn* Instigator)
@@ -33,6 +35,5 @@ void UPickupInteractionComponent::OnInteract(APawn* Instigator)
 				}
 			}
 		}
-
 	}
 }
