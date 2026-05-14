@@ -139,6 +139,17 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 
 		AddCharacterAbilities();
 	}
+
+	if (IsLocallyControlled())
+	{
+		if (ACustomPlayerController* PC = Cast<ACustomPlayerController>(NewController))
+		{
+			if (ACustomHUD* HUD = Cast<ACustomHUD>(PC->GetHUD()))
+			{
+				HUD->RefreshWidget();
+			}
+		}
+	}
 }
 
 void APlayerCharacter::OnRep_PlayerState()
