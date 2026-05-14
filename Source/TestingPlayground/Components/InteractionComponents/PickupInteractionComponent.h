@@ -1,5 +1,7 @@
 ﻿#pragma once
+
 #include "InteractionComponentBase.h"
+#include <TestingPlayground/Components/InventoryComponents/ItemData/ItemsData.h>
 
 #include "PickupInteractionComponent.generated.h"
 
@@ -12,4 +14,13 @@ public:
 	UPickupInteractionComponent();
 
 	virtual void OnInteract(APawn* Instigator) override;
+
+protected:
+	virtual void BeginPlay();
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FStartingItemDef ItemDefined{};
+
+	UPROPERTY()
+	FInventoryItemSlot ItemPayload{};
 };
