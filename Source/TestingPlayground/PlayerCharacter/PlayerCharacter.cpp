@@ -64,6 +64,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(DebugGameplayEffectAction, ETriggerEvent::Started, this, &APlayerCharacter::CallDebugGameplayEffect);
 		
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::OnInteractPressed);
+
+		EnhancedInputComponent->BindAction(ToggleMenuAction, ETriggerEvent::Started, this, &APlayerCharacter::OnToggleMenuPressed);
 	}
 	else
 	{
@@ -89,6 +91,24 @@ void APlayerCharacter::OnInteractPressed(const FInputActionValue& Value)
 
 		FGameplayTag InteractTag = FGameplayTag::RequestGameplayTag(FName("Event.Interaction"));
 		AbilitySystemComponent->HandleGameplayEvent(InteractTag, &Payload);
+	}
+}
+
+void APlayerCharacter::OnToggleMenuPressed(const FInputActionValue& Value)
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	ACustomPlayerController* PC = Cast<ACustomPlayerController>(GetController());
+	if (IsValid(PC))
+	{
+		ACustomHUD* HUD = Cast<ACustomHUD>(PC->GetHUD());
+		if (IsValid(HUD))
+		{
+			HUD->ToggleGameMenu();
+		}
 	}
 }
 

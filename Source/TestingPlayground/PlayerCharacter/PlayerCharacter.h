@@ -53,6 +53,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> InteractAction = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UInputAction> ToggleMenuAction = nullptr;
 	
 	// I'm not sure if that's a correct way but for now lets leave it
 	UPROPERTY()
@@ -75,6 +78,7 @@ protected:
 private:
 	void AddCharacterAbilities();
 	void CallDebugGameplayEffect();
+	void OnToggleMenuPressed(const FInputActionValue& Value);
 
 	UFUNCTION(Server, Reliable)
 	void Server_CallDebugGameplayEffect();
