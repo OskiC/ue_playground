@@ -10,6 +10,7 @@ class ACustomHUD : public AHUD
 	
 public:
 	void RefreshWidget();
+	void ToggleGameMenu();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -17,4 +18,10 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<class UPlayerHUDWidget> PlayerHUDWidget = nullptr;
+
+	UPROPERTY(EditDefaultSonly, Category = "Widgets")
+	TSubclassOf<class UGameMenuWidget> GameMenuWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<class UGameMenuWidget> GameMenuWidget = nullptr;
 };
