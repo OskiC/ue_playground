@@ -1,10 +1,11 @@
-﻿#include "PlayerCharacter.h"
+#include "PlayerCharacter.h"
 
 #include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
 #include "CustomPlayerController.h"
 #include <TestingPlayground/HUD/CustomHUD.h>
 #include <TestingPlayground/Components/InventoryComponents/InventoryComponent.h>
+#include <TestingPlayground/Components/InventoryComponents/EquipmentComponent.h>
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -35,6 +36,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// Custom Components
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("EquipmentComponent"));
 }
 
 void APlayerCharacter::NotifyControllerChanged()

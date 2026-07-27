@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 
@@ -74,6 +74,9 @@ protected:
 	// Custom Components
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TObjectPtr<class UInventoryComponent> InventoryComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Equipement")
+	TObjectPtr<class UEquipmentComponent> EquipmentComponent = nullptr;
 	
 private:
 	void AddCharacterAbilities();
