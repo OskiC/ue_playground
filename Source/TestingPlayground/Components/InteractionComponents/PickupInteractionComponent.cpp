@@ -1,4 +1,4 @@
-﻿#include "PickupInteractionComponent.h"
+#include "PickupInteractionComponent.h"
 #include <TestingPlayground/Components/InventoryComponents/InventoryComponent.h>
 
 UPickupInteractionComponent::UPickupInteractionComponent()
@@ -12,11 +12,17 @@ void UPickupInteractionComponent::BeginPlay()
 
 	if (ItemDefined.IsStructValid())
 	{
-		ItemPayload.ItemDefinition = ItemDefined.ItemDefinition;
-		ItemPayload.StackCount = ItemDefined.Quantity;
-	}
+		TooltipText = FText::FromString(ItemDefined.ItemDefinition->ItemName);
 
-	TooltipText = FText::FromString(ItemPayload.ItemDefinition->ItemName);
+		if (GetOwner()->HasAuthority())
+		{
+			UItemInstance* CreatedInstance = NewObject<UItemInstance>(this);
+			CreatedInstance->ItemDef = ItemDefined.ItemDefinition;
+
+			ItemPayload.ItemInstance = CreatedInstance;
+			ItemPayload.StackCount = ItemDefined.Quantity;
+		}
+	}
 }
 
 void UPickupInteractionComponent::OnInteract(APawn* Instigator)
@@ -27,6 +33,10 @@ void UPickupInteractionComponent::OnInteract(APawn* Instigator)
 		{
 			if (UInventoryComponent* PlayerInventory = Instigator->FindComponentByClass<UInventoryComponent>())
 			{
+				UItemInstance* SafeInstance = DuplicateObject<UItemInstance>(ItemPayload.ItemInstance, PlayerInventory);
+				FInventoryItemSlot SafePayload = ItemPayload;
+				SafePayload.ItemInstance = SafeInstance;
+
 				bool bSuccess = PlayerInventory->AddToInventory(ItemPayload);
 				if (bSuccess)
 				{
