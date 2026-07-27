@@ -18,6 +18,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer ItemTags;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1"))
+	int32 MaxStackSize = 1;
 };
 
 USTRUCT(BlueprintType)
@@ -42,24 +45,59 @@ struct FStartingItemDef
 	}
 };
 
+UCLASS(BlueprintType)
+class UItemInstance : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	TObjectPtr<UItemDefinition> ItemDef = nullptr;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	FGameplayTagContainer InstanceTags;
+};
+
 USTRUCT(BlueprintType)
 struct FInventoryItemSlot
 {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TObjectPtr<UItemDefinition> ItemDefinition = nullptr;
+	TObjectPtr<UItemInstance> ItemInstance = nullptr;
 
 	UPROPERTY()
 	int32 StackCount = 0;
 
 	bool IsStructValid() const
 	{
-		if (IsValid(ItemDefinition))
-		{
-			return true;
-		}
+		return IsValid(ItemInstance);
+	}
+};
 
-		return false;
+USTRUCT(BlueprintType)
+struct FEquipItemSlot
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Equipment")
+	FGameplayTag SlotRequirementTag;
+
+	UPROPERTY()
+	TObjectPtr<UItemInstance> EquippedItem = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Equipment")
+	TObjectPtr<UTexture2D> EmptySlotIcon = nullptr;
+
+	bool IsStructValid() const
+	{
+		return IsValid(EquippedItem);
 	}
 };
