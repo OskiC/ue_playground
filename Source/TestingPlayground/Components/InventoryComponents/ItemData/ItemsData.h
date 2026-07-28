@@ -101,3 +101,10 @@ struct FEquipItemSlot
 		return IsValid(EquippedItem);
 	}
 };
+
+UENUM()
+enum class EPanelType : uint8
+{
+	Inventory = 0,
+	Equipment = 1
+};
