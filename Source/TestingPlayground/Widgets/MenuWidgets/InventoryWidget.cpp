@@ -69,7 +69,7 @@ void UInventoryWidget::PopulateInventoryGrid()
 				SlotDataToPass = ItemsInInventory[i];
 			}
 
-			NewSlot->SetupSlot(i, ItemsInInventory[i]);
+			NewSlot->SetupSlot(i, EPanelType::Inventory, ItemsInInventory[i]);
 
 			int32 Row = i / Columns;
 			int32 Col = i % Columns;
@@ -117,7 +117,7 @@ void UInventoryWidget::PopulateEquipmentGrid()
 				}
 			}
 
-			NewSlot->SetupSlot(i, PayloadForUI, GhostIconToPass);
+			NewSlot->SetupSlot(i, EPanelType::Equipment, PayloadForUI, GhostIconToPass);
 
 			EquipmentPanel->AddChild(NewSlot);
 		}

@@ -1,24 +1,19 @@
 #include "InventorySlotWidget.h"
 
-#include "../../Components/InventoryComponents/ItemData/ItemsData.h"
-
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+#include "Input/Reply.h"
 
-void UInventorySlotWidget::SetupSlot(int32 SlotIndex, const FInventoryItemSlot& SlotData, UTexture2D* GhostIcon)
+void UInventorySlotWidget::SetupSlot(int32 SlotIndex, EPanelType PanelType, const FInventoryItemSlot& SlotData, UTexture2D* GhostIcon)
 {
 	MyInventoryIndex = SlotIndex;
+	MyPanelType = PanelType;
 
-	if (!ItemIcon || !CountText || !SlotButton)
+	if (!ItemIcon || !CountText)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Item not created"));
 		return;
-	}
-	
-	if (!SlotButton->OnClicked.IsAlreadyBound(this, &UInventorySlotWidget::OnSlotClicked))
-	{
-		SlotButton->OnClicked.AddDynamic(this, &UInventorySlotWidget::OnSlotClicked);
 	}
 
 	if (SlotData.IsStructValid())
@@ -59,7 +54,27 @@ void UInventorySlotWidget::SetupSlot(int32 SlotIndex, const FInventoryItemSlot& 
 	}
 }
 
-void UInventorySlotWidget::OnSlotClicked()
+FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Button clicked on item"));
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		return FReply::Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
+	}
+
+	return FReply::Unhandled();
+}
+
+void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+
+	UItemDragDropOperation* Payload = NewObject<UItemDragDropOperation>();
+	Payload->SourceIndex = MyInventoryIndex;
+	Payload->SourceWidget = this;
+	Payload->PanelSource = MyPanelType;
+	Payload->DefaultDragVisual = this;
+	
+	OutOperation = Payload;
 }
