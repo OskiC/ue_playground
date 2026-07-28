@@ -22,7 +22,9 @@ public class TestingPlayground : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
-			"UMG"
+			"UMG",
+            "Slate",
+            "SlateCore"
 		});
 
 		if (Target.bBuildEditor)
