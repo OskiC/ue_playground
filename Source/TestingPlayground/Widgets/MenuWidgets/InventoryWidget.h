@@ -12,6 +12,9 @@ class UInventoryWidget : public UUserWidget
 public:
     virtual void NativeOnInitialized() override;
 
+	UFUNCTION()
+	void HandleSlotDrop(EPanelType SourcePanel, int32 SourceIndex, EPanelType TargetPanel, int32 TargetIndex);
+
 protected:
     UPROPERTY(meta = (BindWidget))
     class UUniformGridPanel* InventoryGridPanel;
@@ -39,5 +42,4 @@ private:
 
 	UFUNCTION()
 	void PopulateEquipmentGrid();
-
 };

@@ -21,6 +21,9 @@ public:
 	int32 GetInventoryCapacity() const;
 	TArray<FInventoryItemSlot> GetActiveInventory() const;
 
+	UFUNCTION(Server, Reliable)
+	void Server_SwapItems(int32 SourceIndex, int32 TargetIndex);
+
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags);
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")

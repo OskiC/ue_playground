@@ -124,3 +124,14 @@ void UInventoryComponent::OnRep_ActiveInventory()
 {
 	OnInventoryUpdated.Broadcast();
 }
+
+void UInventoryComponent::Server_SwapItems_Implementation(int32 SourceIndex, int32 TargetIndex)
+{
+	if (!ActiveInventory.IsValidIndex(SourceIndex) || !ActiveInventory.IsValidIndex(TargetIndex))
+	{
+		return;
+	}
+
+	ActiveInventory.Swap(SourceIndex, TargetIndex);
+	OnInventoryUpdated.Broadcast();
+}

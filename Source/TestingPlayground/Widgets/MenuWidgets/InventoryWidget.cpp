@@ -70,6 +70,7 @@ void UInventoryWidget::PopulateInventoryGrid()
 			}
 
 			NewSlot->SetupSlot(i, EPanelType::Inventory, ItemsInInventory[i]);
+			NewSlot->OnItemDropped.AddDynamic(this, &UInventoryWidget::HandleSlotDrop);
 
 			int32 Row = i / Columns;
 			int32 Col = i % Columns;
@@ -118,8 +119,30 @@ void UInventoryWidget::PopulateEquipmentGrid()
 			}
 
 			NewSlot->SetupSlot(i, EPanelType::Equipment, PayloadForUI, GhostIconToPass);
+			NewSlot->OnItemDropped.AddDynamic(this, &UInventoryWidget::HandleSlotDrop);
 
 			EquipmentPanel->AddChild(NewSlot);
 		}
+	}
+}
+
+void UInventoryWidget::HandleSlotDrop(EPanelType SourcePanel, int32 SourceIndex, EPanelType TargetPanel, int32 TargetIndex)
+{
+	// Swap functions calls delegate to populate equipment and inventory grids
+	if (SourcePanel == EPanelType::Inventory && TargetPanel == EPanelType::Inventory)
+	{
+		InventoryComponent->Server_SwapItems(SourceIndex, TargetIndex);
+	}
+	else if (SourcePanel == EPanelType::Inventory && TargetPanel == EPanelType::Equipment)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("From Inventory to EQ"));
+	}
+	else if (SourcePanel == EPanelType::Equipment && TargetPanel == EPanelType::Inventory)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("From EQ to inventory"));
+	}
+	else if (SourcePanel == EPanelType::Equipment && TargetPanel == EPanelType::Equipment)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FROM EQ TO EQ probably not possible but we'll see"));
 	}
 }
