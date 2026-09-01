@@ -78,7 +78,7 @@ void UInventoryWidget::PopulateInventoryGrid()
 			if (GridSlot)
 			{
 				GridSlot->SetHorizontalAlignment(HAlign_Center);
-				GridSlot->SetVerticalAlignment(VAlign_Center);
+				GridSlot->SetVerticalAlignment(VAlign_Top);
 			}
 		}
 	}

@@ -29,7 +29,7 @@ protected:
     TSubclassOf<class UInventorySlotWidget> InventorySlotWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, Category = "Inventory")
-    int32 Columns = 4;
+    int32 Columns = 5;
 
 private:
     void FetchCharacterInfromation();
