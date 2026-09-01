@@ -31,9 +31,10 @@ void UInventorySlotWidget::SetupSlot(int32 SlotIndex, EPanelType PanelType, cons
 			CountText->SetText(FText::AsNumber(SlotData.StackCount));
 			CountText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		}
-		else
+		else if(SlotData.StackCount == 1)
 		{
-			CountText->SetText(FText::GetEmpty());
+			CountText->SetText(FText::AsNumber(SlotData.StackCount));
+			CountText->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 	else
@@ -68,6 +69,11 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
+	if (!IsValid(this) || this->CountText->GetText().IsEmpty())
+	{
+		return;
+	}
+
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 
 	UItemDragDropOperation* Payload = NewObject<UItemDragDropOperation>();
@@ -77,4 +83,20 @@ void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, con
 	Payload->DefaultDragVisual = this;
 	
 	OutOperation = Payload;
+}
+
+bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	
+	if (UItemDragDropOperation* Payload = Cast<UItemDragDropOperation>(InOperation))
+	{
+		if (Payload->SourceWidget != this)
+		{
+			OnItemDropped.Broadcast(Payload->PanelSource, Payload->SourceIndex, MyPanelType, MyInventoryIndex);
+			return true;
+		}
+	}
+
+	return false;
 }

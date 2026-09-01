@@ -7,6 +7,8 @@
 
 #include "InventorySlotWidget.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnItemDropSignature, EPanelType, SourcePanel, int32, SourceIndex, EPanelType, TargetPanel, int32, TargetIndex);
+
 UCLASS()
 class UInventorySlotWidget : public UUserWidget
 {
@@ -15,9 +17,13 @@ class UInventorySlotWidget : public UUserWidget
 public:
 	void SetupSlot(int32 SlotIndex, EPanelType PanelType, const struct FInventoryItemSlot& SlotData, UTexture2D* GhostIcon = nullptr);
 
+	UPROPERTY(BlueprintAssignable)
+	FOnItemDropSignature OnItemDropped;
+
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ItemIcon;
