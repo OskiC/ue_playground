@@ -135,14 +135,20 @@ void UInventoryWidget::HandleSlotDrop(EPanelType SourcePanel, int32 SourceIndex,
 	}
 	else if (SourcePanel == EPanelType::Inventory && TargetPanel == EPanelType::Equipment)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("From Inventory to EQ"));
+		if (APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
+		{
+			Character->Server_EquipItemFromInventory(SourceIndex, TargetIndex);
+		}
 	}
 	else if (SourcePanel == EPanelType::Equipment && TargetPanel == EPanelType::Inventory)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("From EQ to inventory"));
+		if (APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwningPlayerPawn()))
+		{
+			Character->Server_UnequipItemToInventory(SourceIndex, TargetIndex);
+		}
 	}
 	else if (SourcePanel == EPanelType::Equipment && TargetPanel == EPanelType::Equipment)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("FROM EQ TO EQ probably not possible but we'll see"));
+		UE_LOG(LogTemp, Warning, TEXT("FROM EQ TO EQ probably not needed but we'll see"));
 	}
 }
