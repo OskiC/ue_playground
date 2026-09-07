@@ -22,6 +22,7 @@ public:
 
 	int32 GetItemSlotCount();
 	TArray<FEquipItemSlot> GetEquipmentSlots() const;
+	TArray<FEquipItemSlot>& GetEquipmentSlotsRef();
 
 	UPROPERTY(BlueprintAssignable, Category = "Equipment")
 	FOnEquipmentUpdated OnEquipmentUpdated;

@@ -47,6 +47,11 @@ TArray<FEquipItemSlot> UEquipmentComponent::GetEquipmentSlots() const
 	return EquippedItems;
 }
 
+TArray<FEquipItemSlot>& UEquipmentComponent::GetEquipmentSlotsRef()
+{
+	return EquippedItems;
+}
+
 bool UEquipmentComponent::EquipItem(UItemInstance* ItemToEquip)
 {
 	if (GetOwner()->HasAuthority() || !IsValid(ItemToEquip))

@@ -115,6 +115,11 @@ TArray<FInventoryItemSlot> UInventoryComponent::GetActiveInventory() const
 	return ActiveInventory;
 }
 
+TArray<FInventoryItemSlot>& UInventoryComponent::GetActiveInventoryRef()
+{
+	return ActiveInventory;
+}
+
 int32 UInventoryComponent::GetInventoryCapacity() const
 {
 	return InventoryCapacity;

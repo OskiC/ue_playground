@@ -20,6 +20,7 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	int32 GetInventoryCapacity() const;
 	TArray<FInventoryItemSlot> GetActiveInventory() const;
+	TArray<FInventoryItemSlot>& GetActiveInventoryRef();
 
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItems(int32 SourceIndex, int32 TargetIndex);
