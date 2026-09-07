@@ -247,3 +247,84 @@ void APlayerCharacter::Server_CallDebugGameplayEffect_Implementation()
 		}
 	}
 }
+
+void APlayerCharacter::Server_EquipItemFromInventory_Implementation(int32 InventoryIndex, int32 EquipmentIndex)
+{
+	TArray<FInventoryItemSlot>& InventoryArray = InventoryComponent->GetActiveInventoryRef();
+	TArray<FEquipItemSlot>& EquipmentArray = EquipmentComponent->GetEquipmentSlotsRef();
+
+	if (!InventoryArray.IsValidIndex(InventoryIndex) || !EquipmentArray.IsValidIndex(EquipmentIndex))
+	{
+		return;
+	}
+
+	FInventoryItemSlot& InvSlot = InventoryArray[InventoryIndex];
+	FEquipItemSlot& EqSlot = EquipmentArray[EquipmentIndex];
+
+	if (InvSlot.IsStructValid() && InvSlot.ItemInstance->ItemDef->ItemTags.HasTag(EqSlot.SlotRequirementTag))
+	{
+		UItemInstance* PreviouslyEquippedItem = EqSlot.EquippedItem;
+
+		EqSlot.EquippedItem = InvSlot.ItemInstance;
+
+		if (IsValid(PreviouslyEquippedItem))
+		{
+			InvSlot.ItemInstance = PreviouslyEquippedItem;
+			InvSlot.StackCount = 1;
+		}
+		else
+		{
+			InvSlot.ItemInstance = nullptr;
+			InvSlot.StackCount = 0;
+		}
+
+		InventoryComponent->OnInventoryUpdated.Broadcast();
+		EquipmentComponent->OnEquipmentUpdated.Broadcast();
+	}
+}
+
+void APlayerCharacter::Server_UnequipItemToInventory_Implementation(int32 EquipmentIndex, int32 InventoryIndex)
+{
+	TArray<FInventoryItemSlot>& InventoryArray = InventoryComponent->GetActiveInventoryRef();
+	TArray<FEquipItemSlot>& EquipmentArray = EquipmentComponent->GetEquipmentSlotsRef();
+
+	if (!InventoryArray.IsValidIndex(InventoryIndex) || !EquipmentArray.IsValidIndex(EquipmentIndex))
+	{
+		return;
+	}
+
+	FInventoryItemSlot& InvSlot = InventoryArray[InventoryIndex];
+	FEquipItemSlot& EqSlot = EquipmentArray[EquipmentIndex];
+
+	if (!IsValid(EqSlot.EquippedItem))
+	{
+		return;
+	}
+
+	if (!InvSlot.IsStructValid())
+	{
+		InvSlot.ItemInstance = EqSlot.EquippedItem;
+		InvSlot.StackCount = 1;
+
+		EqSlot.EquippedItem = nullptr;
+	}
+	else
+	{
+		if (InvSlot.ItemInstance->ItemDef->ItemTags.HasTag(EqSlot.SlotRequirementTag))
+		{
+			UItemInstance* TempEqItem = EqSlot.EquippedItem;
+
+			EqSlot.EquippedItem = InvSlot.ItemInstance;
+
+			InvSlot.ItemInstance = TempEqItem;
+			InvSlot.StackCount = 1;
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	InventoryComponent->OnInventoryUpdated.Broadcast();
+	EquipmentComponent->OnEquipmentUpdated.Broadcast();
+}

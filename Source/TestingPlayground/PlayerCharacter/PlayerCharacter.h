@@ -18,6 +18,12 @@ public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION(Server, Reliable)
+	void Server_EquipItemFromInventory(int32 InventoryIndex, int32 EquipmentIndex);
+
+	UFUNCTION(Server, Reliable)
+	void Server_UnequipItemToInventory(int32 EquipmentIndex, int32 InventoryIndex);
+
 protected:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
