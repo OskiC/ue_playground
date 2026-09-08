@@ -62,7 +62,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UInputAction> ToggleMenuAction = nullptr;
-	
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class USceneCaptureComponent2D> CaptureComponent = nullptr;
+
 	// I'm not sure if that's a correct way but for now lets leave it
 	UPROPERTY()
 	TObjectPtr<class UCustomAbilitySystemComponent> AbilitySystemComponent = nullptr;

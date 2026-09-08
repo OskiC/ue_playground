@@ -1,17 +1,18 @@
 #include "PlayerCharacter.h"
 
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+
 #include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
 #include "TestingPlayground/PlayerState/CustomPlayerState.h"
 #include "CustomPlayerController.h"
 #include <TestingPlayground/HUD/CustomHUD.h>
 #include <TestingPlayground/Components/InventoryComponents/InventoryComponent.h>
 #include <TestingPlayground/Components/InventoryComponents/EquipmentComponent.h>
-
-#include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -33,6 +34,10 @@ APlayerCharacter::APlayerCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	CameraComponent->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	CameraComponent->bUsePawnControlRotation = false;
+
+	CaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCaptureComponent"));
+	CaptureComponent->ShowOnlyActorComponents(this);
+	CaptureComponent->SetupAttachment(GetCapsuleComponent());
 
 	// Custom Components
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
