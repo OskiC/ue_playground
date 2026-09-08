@@ -22,6 +22,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UPanelWidget* EquipmentPanel;
 
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* AttributeBox;
+
     UPROPERTY()
     TObjectPtr<class UInventoryComponent> InventoryComponent;
 
@@ -31,8 +34,14 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Inventory")
     TSubclassOf<class UInventorySlotWidget> InventorySlotWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	TSubclassOf<class UAttributeUIWidget> AttributeWidgetClass;
+
     UPROPERTY(EditDefaultsOnly, Category = "Inventory")
     int32 Columns = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Attributes")
+	class UAttributeUIDataAsset* AttributeUIDataAsset = nullptr;
 
 private:
     void FetchCharacterInfromation();
@@ -42,4 +51,7 @@ private:
 
 	UFUNCTION()
 	void PopulateEquipmentGrid();
+
+	UFUNCTION()
+	void PopulateAttributeBox();
 };
