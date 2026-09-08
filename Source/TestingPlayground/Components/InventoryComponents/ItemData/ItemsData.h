@@ -96,6 +96,12 @@ struct FEquipItemSlot
 	UPROPERTY(EditAnywhere, Category = "Equipment")
 	TObjectPtr<UTexture2D> EmptySlotIcon = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	int32 GridRow = 0;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	int32 GridColumn = 0;
+
 	bool IsStructValid() const
 	{
 		return IsValid(EquippedItem);
