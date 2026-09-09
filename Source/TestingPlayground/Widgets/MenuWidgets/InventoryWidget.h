@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+#include <GameplayEffectTypes.h>
 
 #include "InventoryWidget.generated.h"
 
@@ -11,6 +12,7 @@ class UInventoryWidget : public UUserWidget
 
 public:
     virtual void NativeOnInitialized() override;
+	void OnAttributeValueChanged(const FOnAttributeChangeData& Data);
 
 	UFUNCTION()
 	void HandleSlotDrop(EPanelType SourcePanel, int32 SourceIndex, EPanelType TargetPanel, int32 TargetIndex);

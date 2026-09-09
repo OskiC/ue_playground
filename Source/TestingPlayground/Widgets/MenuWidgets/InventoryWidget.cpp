@@ -38,8 +38,27 @@ void UInventoryWidget::FetchCharacterInfromation()
 	InventoryComponent->OnInventoryUpdated.AddDynamic(this, &UInventoryWidget::PopulateInventoryGrid);
 	EquipmentComponent->OnEquipmentUpdated.AddDynamic(this, &UInventoryWidget::PopulateEquipmentGrid);
 
+	if (ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(GetOwningPlayerState()))
+	{
+		if (UAbilitySystemComponent* ASC = PlayerState->GetAbilitySystemComponent())
+		{
+			if (IsValid(AttributeUIDataAsset))
+			{
+				for (const FAttributeUIData& AttributeSlot : AttributeUIDataAsset->AttributesToShow)
+				{
+					ASC->GetGameplayAttributeValueChangeDelegate(AttributeSlot.Attribute).AddUObject(this, &UInventoryWidget::OnAttributeValueChanged);
+				}
+			}
+		}
+	}
+
 	PopulateInventoryGrid();
 	PopulateEquipmentGrid();
+	PopulateAttributeBox();
+}
+
+void UInventoryWidget::OnAttributeValueChanged(const FOnAttributeChangeData& Data)
+{
 	PopulateAttributeBox();
 }
 
@@ -137,8 +156,6 @@ void UInventoryWidget::PopulateEquipmentGrid()
 			}
 		}
 	}
-
-	PopulateAttributeBox();
 }
 
 void UInventoryWidget::HandleSlotDrop(EPanelType SourcePanel, int32 SourceIndex, EPanelType TargetPanel, int32 TargetIndex)
