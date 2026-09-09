@@ -13,6 +13,8 @@
 #include <TestingPlayground/HUD/CustomHUD.h>
 #include <TestingPlayground/Components/InventoryComponents/InventoryComponent.h>
 #include <TestingPlayground/Components/InventoryComponents/EquipmentComponent.h>
+#include <TestingPlayground/Abilities/Attributes/AttributeHealthSet.h>
+#include <TestingPlayground/Abilities/Attributes/CoreStatsSet.h>
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -268,6 +270,12 @@ void APlayerCharacter::Server_EquipItemFromInventory_Implementation(int32 Invent
 
 	if (InvSlot.IsStructValid() && InvSlot.ItemInstance->ItemDef->ItemTags.HasTag(EqSlot.SlotRequirementTag))
 	{
+		if (EqSlot.ActiveEffectHandle.IsValid())
+		{
+			AbilitySystemComponent->RemoveActiveGameplayEffect(EqSlot.ActiveEffectHandle);
+			EqSlot.ActiveEffectHandle.Invalidate();
+		}
+		
 		UItemInstance* PreviouslyEquippedItem = EqSlot.EquippedItem;
 
 		EqSlot.EquippedItem = InvSlot.ItemInstance;
@@ -282,6 +290,9 @@ void APlayerCharacter::Server_EquipItemFromInventory_Implementation(int32 Invent
 			InvSlot.ItemInstance = nullptr;
 			InvSlot.StackCount = 0;
 		}
+
+		
+		ApplyEquipmentsStats(EqSlot);
 
 		InventoryComponent->OnInventoryUpdated.Broadcast();
 		EquipmentComponent->OnEquipmentUpdated.Broadcast();
@@ -306,30 +317,119 @@ void APlayerCharacter::Server_UnequipItemToInventory_Implementation(int32 Equipm
 		return;
 	}
 
+	if (InvSlot.IsStructValid())
+	{
+		if (!IsValid(InvSlot.ItemInstance) || !IsValid(InvSlot.ItemInstance->ItemDef))
+		{
+			return;
+		}
+
+		if (!InvSlot.ItemInstance->ItemDef->ItemTags.HasTag(EqSlot.SlotRequirementTag))
+		{
+			return;
+		}
+	}
+
+	UItemInstance* EquippedItem = EqSlot.EquippedItem;
+
+	if (EqSlot.ActiveEffectHandle.IsValid())
+	{
+		AbilitySystemComponent->RemoveActiveGameplayEffect(EqSlot.ActiveEffectHandle);
+
+		EqSlot.ActiveEffectHandle.Invalidate();
+	}
+
 	if (!InvSlot.IsStructValid())
 	{
-		InvSlot.ItemInstance = EqSlot.EquippedItem;
+		InvSlot.ItemInstance = EquippedItem;
 		InvSlot.StackCount = 1;
 
 		EqSlot.EquippedItem = nullptr;
 	}
 	else
 	{
-		if (InvSlot.ItemInstance->ItemDef->ItemTags.HasTag(EqSlot.SlotRequirementTag))
-		{
-			UItemInstance* TempEqItem = EqSlot.EquippedItem;
+		EqSlot.EquippedItem = InvSlot.ItemInstance;
 
-			EqSlot.EquippedItem = InvSlot.ItemInstance;
-
-			InvSlot.ItemInstance = TempEqItem;
-			InvSlot.StackCount = 1;
-		}
-		else
-		{
-			return;
-		}
+		InvSlot.ItemInstance = EquippedItem;
+		InvSlot.StackCount = 1;
+		
+		ApplyEquipmentsStats(EqSlot);
 	}
 
 	InventoryComponent->OnInventoryUpdated.Broadcast();
 	EquipmentComponent->OnEquipmentUpdated.Broadcast();
+}
+
+void APlayerCharacter::ApplyEquipmentsStats(FEquipItemSlot& EqSlot)
+{
+	if (!IsValid(EqSlot.EquippedItem))
+	{
+		return;
+	}
+
+	if (!IsValid(EqSlot.EquippedItem->ItemDef))
+	{
+		return;
+	}
+
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	if (!EquipmentStatsEffect)
+	{
+		return;
+	}
+
+	static const TMap<FGameplayAttribute, FName> EquipmentAttributeToTagMap =
+	{
+		{ UCoreStatsSet::GetMaxStaminaAttribute(), FName("Data.Equipment.MaxStamina") },
+		{ UCoreStatsSet::GetMaxManaAttribute(), FName("Data.Equipment.MaxMana") },
+		{ UCoreStatsSet::GetArmorAttribute(), FName("Data.Equipment.Armor") },
+		{ UCoreStatsSet::GetStrengthAttribute(), FName("Data.Equipment.Strength") },
+		{ UCoreStatsSet::GetIntelligenceAttribute(), FName("Data.Equipment.Intelligence") },
+		{ UCoreStatsSet::GetDexterityAttribute(), FName("Data.Equipment.Dexterity") },
+		{ UCoreStatsSet::GetLuckAttribute(), FName("Data.Equipment.Luck") },
+		{ UAttributeHealthSet::GetMaxHealthAttribute(), FName("Data.Equipment.MaxHealth") }
+	};
+
+	FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+	ContextHandle.AddInstigator(this, this);
+
+	FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EquipmentStatsEffect, 1.0f, ContextHandle);
+	if (!SpecHandle.IsValid()) return;
+
+	FGameplayEffectSpec& Spec = *SpecHandle.Data.Get();
+	TMap<FGameplayAttribute, float> FinalStats;
+
+	for (const TPair<FGameplayAttribute, float>& Stat : EqSlot.EquippedItem->ItemDef->BaseStats)
+	{
+		FinalStats.FindOrAdd(Stat.Key) += Stat.Value;
+	}
+	for (const FItemStatBonus& BonusStat : EqSlot.EquippedItem->BonusStats)
+	{
+		FinalStats.FindOrAdd(BonusStat.Attribute) += BonusStat.Value;
+	}
+
+	for (const auto& KVP : EquipmentAttributeToTagMap)
+	{
+		FGameplayTag Tag = FGameplayTag::RequestGameplayTag(KVP.Value);
+		Spec.SetSetByCallerMagnitude(Tag, 0.0f);
+	}
+
+	for (const TPair<FGameplayAttribute, float>& Stat : FinalStats)
+	{
+		if (const FName* TagName = EquipmentAttributeToTagMap.Find(Stat.Key))
+		{
+			FGameplayTag MatchingTag = FGameplayTag::RequestGameplayTag(*TagName);
+			Spec.SetSetByCallerMagnitude(MatchingTag, Stat.Value);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Tried to apply stat %s but no matching tag was found in the map!"), *Stat.Key.AttributeName);
+		}
+	}
+
+	EqSlot.ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec);
 }

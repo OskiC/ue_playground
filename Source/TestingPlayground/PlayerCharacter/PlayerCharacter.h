@@ -72,6 +72,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Debug Game Effect")
 	TSubclassOf<class UGameplayEffect> DebugGameplayEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TSubclassOf<class UGameplayEffect> EquipmentStatsEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "Debug Game Effect")
 	float DebugGameplayEffectLevel = 1.f;
@@ -91,6 +94,7 @@ private:
 	void AddCharacterAbilities();
 	void CallDebugGameplayEffect();
 	void OnToggleMenuPressed(const FInputActionValue& Value);
+	void ApplyEquipmentsStats(struct FEquipItemSlot& EqSlot);
 
 	UFUNCTION(Server, Reliable)
 	void Server_CallDebugGameplayEffect();
