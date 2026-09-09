@@ -1,6 +1,8 @@
 #pragma once
 
 #include <GameplayTagContainer.h>
+#include <AttributeSet.h>
+#include <ActiveGameplayEffectHandle.h>
 
 #include "ItemsData.generated.h"
 
@@ -21,6 +23,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1"))
 	int32 MaxStackSize = 1;
+
+	UPROPERTY(EditAnywhere)
+	TMap<FGameplayAttribute, float> BaseStats;
 };
 
 USTRUCT(BlueprintType)
@@ -45,6 +50,18 @@ struct FStartingItemDef
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FItemStatBonus
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FGameplayAttribute Attribute;
+
+	UPROPERTY()
+	float Value = 0.f;
+};
+
 UCLASS(BlueprintType)
 class UItemInstance : public UObject
 {
@@ -63,6 +80,9 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	FGameplayTagContainer InstanceTags;
+
+	UPROPERTY(Replicated)
+	TArray<FItemStatBonus> BonusStats;
 };
 
 USTRUCT(BlueprintType)
@@ -95,6 +115,9 @@ struct FEquipItemSlot
 
 	UPROPERTY(EditAnywhere, Category = "Equipment")
 	TObjectPtr<UTexture2D> EmptySlotIcon = nullptr;
+
+	UPROPERTY()
+	FActiveGameplayEffectHandle ActiveEffectHandle;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	int32 GridRow = 0;
