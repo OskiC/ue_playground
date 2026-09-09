@@ -1,8 +1,9 @@
-﻿#include "CustomPlayerState.h"
+#include "CustomPlayerState.h"
 
 #include "AbilitySystemComponent.h"
 #include "TestingPlayground/Abilities/CustomAbilitySystemComponent.h"
 #include "TestingPlayground/Abilities/Attributes/AttributeHealthSet.h"
+#include "TestingPlayground/Abilities/Attributes/CoreStatsSet.h"
 
 ACustomPlayerState::ACustomPlayerState()
 {
@@ -12,6 +13,7 @@ ACustomPlayerState::ACustomPlayerState()
 	NetUpdateFrequency = 100.f;
 	
 	HealthSet = CreateDefaultSubobject<UAttributeHealthSet>(TEXT("HealthSet"));
+	CoreStatsSet = CreateDefaultSubobject<UCoreStatsSet>(TEXT("CoreStatsSet"));
 }
 
 UAbilitySystemComponent* ACustomPlayerState::GetAbilitySystemComponent() const
@@ -32,4 +34,9 @@ void ACustomPlayerState::BeginPlay()
 UAttributeHealthSet* ACustomPlayerState::GetAttributeHealthSet()
 {
 	return HealthSet;
+}
+
+UCoreStatsSet* ACustomPlayerState::GetCoreStatsSet()
+{
+	return CoreStatsSet;
 }

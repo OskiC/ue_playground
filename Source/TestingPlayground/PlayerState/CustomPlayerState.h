@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 
@@ -15,6 +15,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 	class UAttributeHealthSet* GetAttributeHealthSet();
+	class UCoreStatsSet* GetCoreStatsSet();
 	
 protected:
 	UPROPERTY(EditAnywhere)
@@ -22,6 +23,9 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<class UAttributeHealthSet> HealthSet = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<class UCoreStatsSet> CoreStatsSet = nullptr;
 	
 	virtual void BeginPlay() override;
 };
